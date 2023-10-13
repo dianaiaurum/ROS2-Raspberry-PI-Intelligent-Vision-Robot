@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My first web page for ROS!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+     crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/eventemitter2@5.0.1/lib/eventemitter2.min.js">
+	</script>
+    <script src="https://s3.eu-west-1.amazonaws.com/rosject.io/js/roslib.min.js">
+    </script>
+    <script type="text/javascript" src="mjpegcanvas.min.js"></script>
+    <script type="text/javascript" src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script type="text/javascript" src="http://static.robotwebtools.org/mjpegcanvasjs/current/mjpegcanvas.min.js"></script>
+
+    <script type="text/javascript" type="text/javascript">
+        /**
+         * Setup all visualization elements when the page is loaded. 
+         */
+        function init() {
+          // Create the main viewer.
+          var viewer = new MJPEGCANVAS.Viewer({
+            divID : 'divCamera',
+            host : '192.168.1.170',
+            width : 320,
+            height : 240,
+            topic : '/rpi_video_feed',
+            port : 8080
+          });
+        }
+      </script>
+
+</head>
+
+<body class="d-flex flex-column h-100" onload="init()">
+    <!-- header of the page -->
+    <header class="header">
+        <div class="container">
+            <div class="jumbotron text-center">
+                <h1>Pet Robot Interface</h1>
+                <p>Keep an eye on your pet</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- main content -->
+    <main id="vueApp">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3>{{ menu_title }}</h3>
+                            <hr>
+                            <label>ROSBridge address</label>
+                            <br>
+                            <input type="text" v-model="rosbridge_address" />
+                            <br>
+                            <button class="mt-2 btn btn-success" v-if="connected" @click="disconnect">Connected!</button>
+                            <button class="mt-2 btn btn-primary" v-else @click="connect">Connect!</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 ">
+                    <div id="divCamera"></div>
+                </div><div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h2 class="text-center">Obstacle Sensors</h2>
+                            <hr />
+                            <p v-if="obstacleAvoidanceFront && notObstacleFront" class="text-success">Front: All good!!</p>
+                            <p v-if="obstacleAvoidanceFront && !notObstacleFront" class="text-danger">Front: Too close!!</p>
+                            <p v-if="obstacleAvoidanceBack && notObstacleBack" class="text-success">Back: All good!!</p>
+                            <p v-if="obstacleAvoidanceBack && !notObstacleBack" class="text-danger">Back: Too close!!</p>
+                            <p v-if="obstacleAvoidanceLeft && notObstacleLeft" class="text-success">Left: All good!!</p>
+                            <p v-if="obstacleAvoidanceLeft && !notObstacleLeft" class="text-danger">Left: Too close!!</p>
+                            <p v-if="obstacleAvoidanceRight && notObstacleRight" class="text-success">Right: All good!!</p>
+                            <p v-if="obstacleAvoidanceRight && !notObstacleRight" class="text-danger">Right: Too close!!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                </div>
+            </div>
+
+                
+                
+                <div class="col-md-12 text-center my-2">
+                    <button @click="callServoService" :disabled="!connected" class="btn btn-primary">TREAT</button>
+                </div>
+            </div>
+                <div class="col-md-12 text-center">
+                        <h2 class="text-center">Joystick</h2>
+                        <p>Robot actions</p>
+                </div>
+                
+                <!-- 1st row -->
+                <div class="col-md-12 text-center">
+                    <button @mousedown="forward" @mouseup="stop" :disabled="!connected" class="btn btn-primary">Go forward</button>
+                    <br><br>
+                </div>
+
+                <!-- 2nd row -->
+                <div class="row">
+                    <div class="col-md-6 text-center">
+                        <button @mousedown="turnLeft" @mouseup="stop" :disabled="!connected" class="btn btn-primary">Turn left</button>
+                    </div>
+                    <div class="col-md-6 text-center">
+                        <div class="box"></div> <!-- Box above the button -->
+                        <button @mousedown="turnRight" @mouseup="stop" :disabled="!connected" class="btn btn-primary">Turn right</button>
+                    </div>
+                </div>
+
+                <!-- 3rd row -->
+                <div class="col-md-12 text-center">
+                    <button @mousedown="backward" @mouseup="stop" :disabled="!connected" class="btn btn-primary">Go backward</button>
+                </div>
+
+                <div class="col-md-6">
+                    <div id="divCamera"></div>
+                </div>
+
+
+                
+
+    </main>
+
+    <script type="text/javascript">
+        // We could have loaded main.js simply with:
+        //  <script type="text/javascript" src="main.js">
+        //
+        // BUT we were having caching-related problems.
+        // Loading main.js with a Date.now() in the URL we avoid using cache
+
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'main.js?v=5.' + Date.now();
+        document.head.appendChild(script);
+    </script>
+</body>
+
+</html>
